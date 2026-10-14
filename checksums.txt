@@ -1,0 +1,2 @@
+12d2f6abcd1d27e8f061faec219d656e1613ac40577900fd9eb8a79ec6dd1cb3  fnos_k20pro_rootfs.img
+c50e9bfb6b35c95b641c6c21601e58e306c7c2d3f1f4dba2f456a29fd22a10d2  fnos_k20pro_rootfs.img.gz
