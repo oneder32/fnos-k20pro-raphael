@@ -1,0 +1,4 @@
+# K20Pro SM8150 udev硬件规则
+SUBSYSTEM=="qrtr", TAG+="systemd", ENV{SYSTEMD_WANTS}+="k20-hardware.service"
+SUBSYSTEM=="bluetooth", GROUP="bluetooth", MODE="0660"
+SUBSYSTEM=="net", ACTION=="add", KERNEL=="wlan*", NAME="wlan0"
