@@ -102,6 +102,7 @@ adb shell dd if=/tmp/fnos_k20pro_rootfs.img of=/dev/block/sda31 bs=4M
      nmcli device wifi connect "你的SSID" password "你的密码"
      ```
    - 或使用 USB-OTG 网卡
+   - 或使用飞牛APP中蓝牙连接
 4. **访问 fnOS WebUI**：
    - 浏览器访问 `http://<手机IP>:5666`
    - 默认账号密码按 fnOS 首次设置向导配置
