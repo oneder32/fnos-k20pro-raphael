@@ -1,0 +1,11 @@
+[Unit]
+Description=K20Pro 蓝牙初始化服务
+After=k20-hardware.service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/modprobe hci_qca
+
+[Install]
+WantedBy=multi-user.target
