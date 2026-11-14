@@ -1,7 +1,7 @@
 # fnOS 适配红米 K20 Pro（raphael / sm8150）
 
 > 在红米 K20 Pro / Mi 9T Pro 上原生运行 fnOS 飞牛私有云，非虚拟机、非 chroot。
-> 目标分区：**`/dev/sda35`**（rootfs），内核 6.16.9-sm8150 + raphael DTB。
+> 目标分区：**`/dev/sda35`**（fnos），内核 6.16.9-sm8150 + raphael DTB。
 
 [![Device](https://img.shields.io/badge/Device-Redmi%20K20%20Pro-red)](https://www.mi.com)
 [![Architecture](https://img.shields.io/badge/Architecture-aarch64%20ARM64-blue)](#)
@@ -33,7 +33,7 @@ ABL (高通 Bootloader)
   │
   ├──→ dtbo 分区   → dtbo.img（可选，结构有效版）
   │
-  └──→ sda35       → fnOS rootfs（ext4，含全套 /usr/trim/bin 服务）
+  └──→ sda35(fnos)       → fnOS rootfs（ext4，含全套 /usr/trim/bin 服务）
                      │
                      └──→ WebUI: http://<手机IP>:5666
 ```
@@ -42,7 +42,7 @@ ABL (高通 Bootloader)
 
 1. K20 Pro 走 **bootloader → boot.img**（内核 + DTB + initramfs）启动，不能走 fnOS 原生的 UEFI/GRUB。
 2. fnOS 自带的 `6.18.18.c1147-trim` 是通用 armsr 内核，没有 K20 Pro 设备树，在手机上用不了；所以**内核用 6.16.9-sm8150（boot.img 自带）**。
-3. initramfs 是「手机启用层」：挂载 `/dev/sda35`（ext4 优先，f2fs 兜底），首次启动把以下内容合并进根文件系统后 `switch_root` 到 systemd：
+3. initramfs 是「手机启用层」：挂载 `/dev/sda35(fnos)`（ext4 优先，f2fs 兜底），首次启动把以下内容合并进根文件系统后 `switch_root` 到 systemd：
    - `/usr/lib/modules/6.16.9-sm8150/`（内核模块）
    - `/usr/lib/firmware/`（高通 / ath10k 固件，含 WCN3990 WiFi）
    - `/usr/bin/{pd-mapper,qrtr-ns,rmtfs,tqftpserv}` + systemd 单元（高通 modem 服务）
@@ -113,7 +113,7 @@ GitHub 下载慢或打不开时，使用 123 云盘备用链接：
 - ✅ 电量 > 50%，数据线稳定
 - ✅（可选）TWRP / OrangeFox recovery（用于 tar.gz 解压方式）
 
-> ⚠️ **本操作会覆盖 `/dev/sda35` 现有内容**（你原来的 Ubuntu/Kali 根分区）。动手前务必备份数据。刷机有风险，变砖/数据丢失自行承担。
+> ⚠️ **本操作会覆盖 `/dev/sda35(fnos)` 现有内容**（你原来的 Ubuntu/Kali 根分区）。动手前务必备份数据。刷机有风险，变砖/数据丢失自行承担。
 
 ---
 
