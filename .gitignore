@@ -1,0 +1,4 @@
+dist/
+*.tar.gz
+*.img
+*.zip

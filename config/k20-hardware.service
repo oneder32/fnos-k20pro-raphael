@@ -1,13 +1,14 @@
 [Unit]
-Description=K20Pro SM8150 高通硬件初始化服务
+Description=K20Pro SM8150 Qualcomm hardware init
 After=systemd-modules-load.service
 Before=network.target
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/bin/k20-load-drivers.sh
+ExecStart=/sbin/modprobe -b btqca
+ExecStart=/sbin/modprobe ath10k_snoc
+ExecStart=/bin/systemctl start qrtr-ns.service pd-mapper.service rmtfs.service tqftpserv.service
 
 [Install]
 WantedBy=multi-user.target
-

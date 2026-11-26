@@ -1,2 +1,5 @@
-12d2f6abcd1d27e8f061faec219d656e1613ac40577900fd9eb8a79ec6dd1cb3  fnos_k20pro_rootfs.img
-c50e9bfb6b35c95b641c6c21601e58e306c7c2d3f1f4dba2f456a29fd22a10d2  fnos_k20pro_rootfs.img.gz
+# fnOS 1.2.1011 armsr / 红米 K20 Pro (raphael, SM8150) 产物 SHA256
+# 生成时间：2026-11-26
+
+ac17dc5381bdaee6c6df300ba6a75a006e68267e65ac06a65bdfa1b006768111  fnos_k20pro_rootfs.tar.gz
+4d9862be7bece8d0a8fca7a8aa2ef4855b76f6ec3b4b97f03f77805e108300ba  fnos-k20pro-drivers-overlay.tar.gz

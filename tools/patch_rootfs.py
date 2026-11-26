@@ -4,7 +4,7 @@
 # headers) is preserved byte-for-byte.
 import gzip, os, sys
 
-base = r'E:\DeepSeek Harness\fnos'
+base = os.environ.get('FNOS_BASE', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'build'))
 src = os.path.join(base, 'work', 'trimfs.tgz')
 dst = os.path.join(base, 'dist', 'fnos_k20pro_rootfs.tar.gz')
 

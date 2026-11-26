@@ -4,7 +4,7 @@
 # plus the 4 extra module-metadata files that exist in kali.tar.
 import os, struct, lzma, tarfile, io, time
 
-base = r'E:\DeepSeek Harness\fnos'
+base = os.environ.get('FNOS_BASE', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'build'))
 dist = os.path.join(base, 'dist')
 os.makedirs(dist, exist_ok=True)
 

@@ -4,7 +4,7 @@
 # is provided mainly as a valid replacement for the empty dtbo.img.
 import os, struct
 
-base = r'E:\DeepSeek Harness\fnos'
+base = os.environ.get('FNOS_BASE', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'build'))
 work = os.path.join(base, 'work')
 dist = os.path.join(base, 'dist')
 os.makedirs(dist, exist_ok=True)

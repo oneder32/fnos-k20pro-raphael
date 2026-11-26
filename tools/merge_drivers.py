@@ -5,7 +5,7 @@
 # marker is written at the very end.
 import gzip, os, sys
 
-base = r'E:\DeepSeek Harness\fnos'
+base = os.environ.get('FNOS_BASE', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'build'))
 dist = os.path.join(base, 'dist')
 rootfs = os.path.join(dist, 'fnos_k20pro_rootfs.tar.gz')
 drivers = os.path.join(dist, 'fnos_k20pro_drivers.tar.gz')

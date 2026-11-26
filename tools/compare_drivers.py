@@ -2,7 +2,7 @@
 # Compare drivers (modules + firmware) between kali.tar and the boot.img initramfs.
 import os, tarfile
 
-base = r'E:\DeepSeek Harness\fnos'
+base = os.environ.get('FNOS_BASE', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'build'))
 kali = os.path.join(base, 'kali.tar')
 initroot = os.path.join(base, 'work', 'initramfs_root')
 

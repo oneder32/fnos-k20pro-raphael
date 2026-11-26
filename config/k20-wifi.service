@@ -1,11 +1,11 @@
 [Unit]
-Description=K20Pro WiFi初始化服务
+Description=K20Pro WiFi init
 After=k20-hardware.service
 
 [Service]
 Type=oneshot
 RemainAfterExit=yes
-ExecStart=/usr/bin/modprobe ath10k_snoc
+ExecStart=/sbin/modprobe ath10k_snoc
 
 [Install]
 WantedBy=multi-user.target

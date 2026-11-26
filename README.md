@@ -5,7 +5,7 @@
 
 [![Device](https://img.shields.io/badge/Device-Redmi%20K20%20Pro-red)](https://www.mi.com)
 [![Architecture](https://img.shields.io/badge/Architecture-aarch64%20ARM64-blue)](#)
-[![fnOS](https://img.shields.io/badge/fnOS-1.2.0701%20armsr-orange)](#)
+[![fnOS](https://img.shields.io/badge/fnOS-1.2.1011%20armsr-orange)](#)
 [![Kernel](https://img.shields.io/badge/Kernel-6.16.9--sm8150-green)](#)
 [![Status](https://img.shields.io/badge/Status-Experimental-yellow)](#)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey)](#)
@@ -17,8 +17,9 @@
 本仓库是 fnOS 官方 ARM 版在 **红米 K20 Pro（代号 `raphael`，骁龙 855 / SM8150）** 上的完整适配包。
 
 - **原生运行**：sm8150 主线内核 + fnOS 用户态，跑在手机硬件上，不经过虚拟机
-- **官方底包**：基于 `fnos_Mainland-PE_arm_1.2.0701_armsr_2881.iso`，Debian 12.12 用户态
-- **手机驱动烘焙在内**：UFS、WiFi（ath10k/WCN3990）、蓝牙、GPU（Adreno 640）、充电、高通 modem 服务
+- **官方底包**：基于 `fnos_Mainland-PE_arm_1.2.1011_armsr_3133.iso`，Debian 12 bookworm 用户态
+- **手机驱动烘焙在内**：UFS、WiFi（ath10k/WCN3990）、蓝牙（bluez 5.66 + btqca）、GPU（Adreno 640）、充电电量计、高通 modem 服务（qrtr/pd-mapper/rmtfs/tqftpserv）
+- **电源管理**：启用 UPower，WebUI / 命令行可读电池电量、温度、充电状态
 - **根分区**：`/dev/sda35`（ext4 / f2fs 均可）
 
 ### 引导链结构
@@ -55,14 +56,13 @@ ABL (高通 Bootloader)
 
 | 文件 | 大小 | 说明 |
 |------|------|------|
-| `Redmi_K20pro_FnOS线刷包.zip` | 2.0 GB | 查看刷机步骤 |
-| `Redmi_K20pro_FnOS卡刷包.zip` | 2.0 GB | 可使用第三方rec卡刷 |
-| `rootfs.tar.gz` | ~1.8 GB | fnOS 根文件系统 tar 包，fstab 已改、手机驱动已烘焙在内，单包即可 |
+| `rootfs.tar.gz` | ~2.0 GB | 1.2.1011 完整根文件系统 tar 包，fstab 已改、手机驱动/蓝牙/modem/电源已烘焙在内，单包即可 |
+| `fnos-k20pro-drivers-overlay.tar.gz` | ~57 MB | 独立驱动+蓝牙+modem+电源 overlay 补丁包，已进系统后可叠加，无需重刷整包 |
+| `install-overlay.sh` | 2 KB | overlay 设备端安装脚本（root 执行：解压叠加、建 bluetooth 组、启用服务、depmod） |
 | `boot.img` | ~14 MB | 启动镜像：6.16.9 内核 + raphael DTB + initramfs，根分区指向 `/dev/sda35` |
 | `dtbo.img` | — | 由 raphael DTB 重新生成的有效 dtbo（原来那份 32MB 全零，无效） |
 
-
-> 二选一：`tar.gz` 走 recovery 解压（灵活、支持 f2fs）；`.img` 走 fastboot 直刷（快、ext4）。
+> 两种用法：整包 `rootfs.tar.gz` 走 recovery 解压（全新刷入）；已在跑旧系统、只想补驱动/蓝牙/电源时，推 `overlay.tar.gz` + `install-overlay.sh` 叠加后重启即可。`.img` 走 fastboot 直刷（快、ext4）。
 
 ---
 
@@ -74,11 +74,13 @@ ABL (高通 Bootloader)
 
 进入仓库 **Releases** 页面，下载所需文件：
 
-🔗 **Releases 页面**：https://github.com/oneder32/fnos-k20pro/releases/latest
+🔗 **Releases 页面**：https://github.com/oneder32/fnos-k20pro-raphael/releases/latest
 
 | 文件 | 说明 |
 |------|------|
-| `rootfs.tar.gz` | fnOS 根文件系统 tar 包（走 recovery 解压，约 1.8 GB） |
+| `rootfs.tar.gz` | 1.2.1011 完整根文件系统 tar 包（走 recovery 解压，约 2.0 GB） |
+| `fnos-k20pro-drivers-overlay.tar.gz` | 驱动/蓝牙/modem/电源补丁包（约 57 MB，已进系统后叠加） |
+| `install-overlay.sh` | overlay 设备端安装脚本 |
 | `boot.img` | 启动镜像（内核 + DTB + initramfs，约 14 MB） |
 | `dtbo.img` | 有效 dtbo 分区镜像（约 32 MB） |
 
@@ -195,6 +197,23 @@ hostname              # trim 或 fnos-k20pro
 mount | grep ' / '    # 根应是 /dev/sda35
 ls /lib/modules/       # 应看到 6.16.9-sm8150
 ls /lib/firmware/qcom  # 应看到 sm8150/raphael 的 modem/adsp 固件
+
+# 蓝牙
+hciconfig -a                                   # 应看到 hci0 控制器
+bluetoothctl show                             # 控制器地址/名称就绪
+systemctl status bluetooth k20-bluetooth.service
+
+# WiFi
+ip link show wlan0
+
+# 电池 / 电源（UPower）
+upower -e                                     # 列出电源设备，应含 battery
+upower -i $(upower -e | grep -i battery)      # 电量百分比 / 温度 / 充电状态
+systemctl status upower.service
+
+# 高通 modem 链路（不用蜂窝可忽略）
+systemctl status qrtr-ns pd-mapper rmtfs tqftpserv
+dmesg | grep -iE 'btqca|wcnss|qrtr|ath10k|firmware'
 ```
 
 ---
@@ -217,9 +236,10 @@ fastboot flash dtbo 原dtbo.img   # 没有就跳过
 |------|------|------|
 | UFS 存储 | ✅ | /dev/sda35 |
 | WiFi (ath10k/WCN3990) | ✅ | wlan0 |
-| 蓝牙 (hci_qca) | ✅ | — |
+| 蓝牙 (hci_qca/btqca) | ✅ | bluez 5.66 守护 + WCN3990 固件，App 配网走 NM 蓝牙插件 |
 | GPU (Adreno 640) | ✅ 驱动加载 | 3D 加速需 Mesa 配置 |
-| 充电管理 | ✅ | qpnp-smb5 |
+| 电池 / 电源 | ✅ | 启用 UPower，可读电量/温度/充电状态；电量计 qcom_fg、充电 qcom_smbx 内置在内核 |
+| 充电管理 | ✅ | 高通 SMB 充电驱动内置，无需外置模块 |
 | 触摸屏 | ⚠️ 需确认 | 主线内核支持情况 |
 | 音频 | ⚠️ 需配置 | snd-soc-sm8150 |
 | 摄像头 | ❌ 不支持 | 主线支持有限 |

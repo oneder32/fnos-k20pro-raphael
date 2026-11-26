@@ -2,7 +2,7 @@
 # Repack the K20 Pro boot.img: point rootfs at /dev/sda35, set hostname "trim".
 import os, struct, hashlib, lzma
 
-base = r'E:\DeepSeek Harness\fnos'
+base = os.environ.get('FNOS_BASE', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'build'))
 work = os.path.join(base, 'work')
 dist = os.path.join(base, 'dist')
 os.makedirs(dist, exist_ok=True)
