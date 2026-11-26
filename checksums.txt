@@ -3,3 +3,5 @@
 
 ac17dc5381bdaee6c6df300ba6a75a006e68267e65ac06a65bdfa1b006768111  fnos_k20pro_rootfs.tar.gz
 4d9862be7bece8d0a8fca7a8aa2ef4855b76f6ec3b4b97f03f77805e108300ba  fnos-k20pro-drivers-overlay.tar.gz
+f4f98327f8382531a179ceb42f28d7aa2aabe92366e22966bbef50fcb892dae3  fnos-k20pro-cyan-1.2.1011.zip
+b67426c1a691455839c7e3f95be226fd2f7d390eae246fe3601f4e56d4221e3d  boot_fnos_k20pro.img

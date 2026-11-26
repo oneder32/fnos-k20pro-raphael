@@ -56,13 +56,16 @@ ABL (高通 Bootloader)
 
 | 文件 | 大小 | 说明 |
 |------|------|------|
+| `fnos-k20pro-cyan-1.2.1011.zip` | ~2.1 GB | **Recovery 卡刷包**：内含 boot.img + rootfs.tar.gz + overlay，update-binary 自动刷 boot、定位根分区、格式化解压 |
 | `rootfs.tar.gz` | ~2.0 GB | 1.2.1011 完整根文件系统 tar 包，fstab 已改、手机驱动/蓝牙/modem/电源已烘焙在内，单包即可 |
 | `fnos-k20pro-drivers-overlay.tar.gz` | ~57 MB | 独立驱动+蓝牙+modem+电源 overlay 补丁包，已进系统后可叠加，无需重刷整包 |
 | `install-overlay.sh` | 2 KB | overlay 设备端安装脚本（root 执行：解压叠加、建 bluetooth 组、启用服务、depmod） |
-| `boot.img` | ~14 MB | 启动镜像：6.16.9 内核 + raphael DTB + initramfs，根分区指向 `/dev/sda35` |
+| `boot.img` | ~21 MB | 启动镜像：6.16.9 内核 + raphael DTB + initramfs；根分区探测 **fnos 命名分区优先，sda35 兜底** |
 | `dtbo.img` | — | 由 raphael DTB 重新生成的有效 dtbo（原来那份 32MB 全零，无效） |
 
-> 两种用法：整包 `rootfs.tar.gz` 走 recovery 解压（全新刷入）；已在跑旧系统、只想补驱动/蓝牙/电源时，推 `overlay.tar.gz` + `install-overlay.sh` 叠加后重启即可。`.img` 走 fastboot 直刷（快、ext4）。
+> **根分区引导优先级**：boot initramfs 先找 LABEL/PARTLABEL/PARTNAME=`fnos` 的分区，找不到再回退 `/dev/sda35`；两者共存时优先 fnos 命名分区。
+>
+> 两种用法：卡刷包 zip 走 TWRP/OFox 一键刷入；已在跑旧系统、只想补驱动/蓝牙/电源时，推 `overlay.tar.gz` + `install-overlay.sh` 叠加后重启即可。`boot.img` 也可 fastboot 直刷。
 
 ---
 

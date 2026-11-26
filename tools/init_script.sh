@@ -36,30 +36,81 @@ load_mod "ext4"
 load_mod "f2fs"
 sleep 2
 
-# ---- Find root partition ----
-ROOT_DEV=""
-for dev in /dev/sda35 /dev/block/sda35 /dev/mmcblk0p35; do
-    if [ -b "$dev" ]; then
-        ROOT_DEV="$dev"
+# ============================================================================
+# Root partition discovery
+#   Candidate A (priority): partition named / labeled "fnos"
+#       - filesystem LABEL="fnos" (blkid)
+#       - GPT PARTLABEL="fnos" (blkid)
+#       - GPT PARTNAME=fnos (sysfs uevent)
+#   Candidate B (fallback): fixed slot /dev/sda35
+#   If both exist, the fnos-named partition wins.
+# ============================================================================
+
+# Match one device against the fnos label/partname.
+is_fnos_dev() {
+    local dev blk sysfs uevent
+    dev="$1"
+    blk=$(blkid "$dev" 2>/dev/null)
+    case "$blk" in
+        *'LABEL="fnos"'*|*'PARTLABEL="fnos"'*) return 0 ;;
+    esac
+    sysfs="/sys/class/block/${dev##*/}"
+    uevent="$sysfs/uevent"
+    if [ -r "$uevent" ] && grep -q '^PARTNAME=fnos$' "$uevent" 2>/dev/null; then
+        return 0
+    fi
+    return 1
+}
+
+FNOS_DEV=""
+SLOT_DEV=""
+
+# Collect fnos-named partition across ufs / mmc device nodes.
+for dev in /dev/sd* /dev/block/sd* /dev/mmcblk0p* /dev/block/mmcblk0p*; do
+    [ -b "$dev" ] || continue
+    if is_fnos_dev "$dev"; then
+        FNOS_DEV="$dev"
         break
     fi
 done
 
+# Collect fixed slot sda35.
+for dev in /dev/sda35 /dev/block/sda35 /dev/mmcblk0p35 /dev/block/mmcblk0p35; do
+    if [ -b "$dev" ]; then
+        SLOT_DEV="$dev"
+        break
+    fi
+done
+
+# Priority: fnos named partition first, fixed slot second.
+ROOT_DEV=""
+ROOT_SRC=""
+if [ -n "$FNOS_DEV" ]; then
+    ROOT_DEV="$FNOS_DEV"
+    ROOT_SRC="fnos-named"
+elif [ -n "$SLOT_DEV" ]; then
+    ROOT_DEV="$SLOT_DEV"
+    ROOT_SRC="sda35-slot"
+fi
+
 if [ -z "$ROOT_DEV" ]; then
     echo ""
     echo "========== ROOT DEVICE NOT FOUND =========="
-    echo "tried: /dev/sda35 /dev/block/sda35 /dev/mmcblk0p35"
+    echo "tried: LABEL/PARTLABEL/PARTNAME=fnos partition, then /dev/sda35"
     echo "--- block devices under /dev ---"
-    ls -l /dev/sd* /dev/block/ 2>/dev/null
+    ls -l /dev/sd* /dev/block/ /dev/mmcblk0p* 2>/dev/null
     echo "--- /proc/partitions ---"
     cat /proc/partitions 2>/dev/null
+    echo "--- blkid ---"
+    blkid 2>/dev/null
     echo "==========================================="
     echo "Dropping to shell for debugging."
     /bin/sh
     exit 0
 fi
 
-echo "root device: $ROOT_DEV"
+echo "root device: $ROOT_DEV (source: $ROOT_SRC)"
+echo "  fnos-named: ${FNOS_DEV:-<none>} | fixed slot: ${SLOT_DEV:-<none>}"
 mkdir -p /mnt
 
 if ! mount -t ext4 "$ROOT_DEV" /mnt 2>/dev/null; then
