@@ -61,7 +61,7 @@ ABL (高通 Bootloader)
 | `fnos-k20pro-drivers-overlay.tar.gz` | ~57 MB | 独立驱动+蓝牙+modem+电源 overlay 补丁包，已进系统后可叠加，无需重刷整包 |
 | `install-overlay.sh` | 2 KB | overlay 设备端安装脚本（root 执行：解压叠加、建 bluetooth 组、启用服务、depmod） |
 | `boot.img` | ~21 MB | 启动镜像：6.16.9 内核 + raphael DTB + initramfs；根分区探测 **fnos 命名分区优先，sda35 兜底** |
-| `dtbo.img` | — | 由 raphael DTB 重新生成的有效 dtbo（原来那份 32MB 全零，无效） |
+| `dtbo.img` | — | 由 raphael DTB 重新生成的有效 dtbo（全零，无效） |
 
 > **根分区引导优先级**：boot initramfs 先找 LABEL/PARTLABEL/PARTNAME=`fnos` 的分区，找不到再回退 `/dev/sda35`；两者共存时优先 fnos 命名分区。
 >
@@ -87,17 +87,6 @@ ABL (高通 Bootloader)
 | `boot.img` | 启动镜像（内核 + DTB + initramfs，约 14 MB） |
 | `dtbo.img` | 有效 dtbo 分区镜像（约 32 MB） |
 
-命令行下载示例：
-
-```bash
-#Redmi_K20pro_FnOS_Line_Brush_Package.zip(线刷包)
-wget https://github.com/oneder32/fnos-k20pro/releases/latest/download/Redmi_K20pro_FnOS_Line_Brush_Package.zip
-gunzip Redmi_K20pro_FnOS_Line_Brush_Package.zip
-
-# Redmi_K20pro_FnOS_Card_Brush_Package.zip(卡刷包)
-wget https://github.com/oneder32/fnos-k20pro/releases/latest/download/ Redmi_K20pro_FnOS_Card_Brush_Package.zip
-
-```
 
 ### 方式二：123 云盘（国内加速）
 
@@ -132,7 +121,7 @@ fastboot getvar current-slot   # 记下当前槽位 a/b
 # 若有 TWRP/OrangeFox，先进 recovery 备份整个 /dev/sda35
 ```
 
-### 第 1 步：写入根文件系统到 /dev/sda35
+### 第 1 步：写入根文件系统到 /dev/sda35或者fnos分区
 
 **解压方式：tar.gz + Recovery（推荐，灵活）**
 
@@ -243,7 +232,7 @@ fastboot flash dtbo 原dtbo.img   # 没有就跳过
 | GPU (Adreno 640) | ✅ 驱动加载 | 3D 加速需 Mesa 配置 |
 | 电池 / 电源 | ✅ | 启用 UPower，可读电量/温度/充电状态；电量计 qcom_fg、充电 qcom_smbx 内置在内核 |
 | 充电管理 | ✅ | 高通 SMB 充电驱动内置，无需外置模块 |
-| 触摸屏 | ⚠️ 需确认 | 主线内核支持情况 |
+| 触摸屏 | ⚠️ 需确认 | 需要安装kde或Gnome等桌面 |
 | 音频 | ⚠️ 需配置 | snd-soc-sm8150 |
 | 摄像头 | ❌ 不支持 | 主线支持有限 |
 | 显示 | ⚠️ 可能黑屏/花屏 | 黑屏时 cmdline 加 `video=DSI-1:1080x2340@60 fbcon=nodefer` |
