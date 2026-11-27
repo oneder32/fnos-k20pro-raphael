@@ -1,11 +1,12 @@
 # fnOS 1.2.1011 armsr / 红米 K20 Pro (raphael, SM8150) 产物 SHA256
-# 生成时间：2026-11-26
-# 本轮：新增 fnos 用户(密码 admin1234)，重打 rootfs；产出卡刷/线刷/直升三包
+# 更新时间：2026-11-27
+# 修复：boot ramdisk init 由旧 sda31/rootfs.img 方案改为 sda35/fnos 分区直挂
+#       （fnos 命名分区优先，sda35 兜底），解决反复重启；含 fnos 用户(admin1234)
 
 4e173e7ce969b4335d155d08fd3935d8e81959a12ae2005ae4d1669a37b04579  fnos_k20pro_rootfs.tar.gz
 4d9862be7bece8d0a8fca7a8aa2ef4855b76f6ec3b4b97f03f77805e108300ba  fnos-k20pro-drivers-overlay.tar.gz
-b67426c1a691455839c7e3f95be226fd2f7d390eae246fe3601f4e56d4221e3d  boot_fnos_k20pro.img
+acbd8c9a752c80ed9f2889dc04a5f780ae1be7521a61e72cf79fd24b89101ebf  boot_fnos_k20pro.img
 
-67083bea7bdb5d3c7759a9d97ca38642e452ab244eb1ae24176b89fd379b9f76  fnos-k20pro-cyan-1.2.1011.zip
-9eb9bda0757940b6eac467533eb555268117652e9fa6fbfea3f840dae04f5db4  fnos-k20pro-line-1.2.1011.zip
+7769dc661962cfba5b7bca19a4903d7d0e27c995c3472cd256f3dc5823f31759  fnos-k20pro-cyan-1.2.1011.zip
+728bf16848de785ce97d3f6a48dfa740f417ed8685503456754c4a905b15e881  fnos-k20pro-line-1.2.1011.zip
 642eccdeea32aa74c884fce0bcd8a79730c894d15bb9959b99f9f2c05883d7fd  fnos-k20pro-upgrade-1.2.1011.zip
